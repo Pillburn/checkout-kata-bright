@@ -2,9 +2,8 @@
 namespace CheckoutKata;
 public class Checkout: ICheckout
 {
-    public string SKU { get; set; } //A - Z if and when items get past this marker, we can start adding a num id as well e.g. a1, b1 etc 
-    public double basketTotal {get; set;} 
     private readonly PricingRulesRepo _pricingRules;
+    private readonly List<string> _scannedItems = new();
 
     public Checkout(PricingRulesRepo pricingRules)
     {
@@ -13,10 +12,15 @@ public class Checkout: ICheckout
 
     public void Scan(string itemID)
     {
-        
+        _scannedItems.Add(itemID);
     }
     public double GetTotalPrice()
     {
+        int basketTotal = 0;
+        foreach (var sku in _scannedItems)
+        {
+            var rule = _pricingRules.GetRule(sku);
+        }
         return basketTotal;
     }
 }
