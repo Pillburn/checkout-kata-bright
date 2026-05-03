@@ -13,16 +13,15 @@ public class CheckoutTests
         //Assert Basket is 0
         Assert.Equal(0, checkout.GetTotalPrice());
     }
-    [Theory]
-    [InlineData("A")]
-    public void ScanItem_ReturnCorrectPrice(string SKU)
+    [Fact]
+    public static void ScanItem_ReturnCorrectPrice()
     {
         var rules = new PricingRulesRepo();
         rules.AddRule(new PricingRule{Sku = "A", price = 50});
 
         ICheckout checkout = new Checkout(rules);
 
-        checkout.Scan(SKU);
+        checkout.Scan("A");
         double total = checkout.GetTotalPrice();
 
         Assert.Equal(50, total);
