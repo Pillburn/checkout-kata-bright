@@ -27,6 +27,26 @@ public class CheckoutTests
         Assert.Equal(50, total);
     }
 
+    [Fact]
+     public static void ScanMultipleItems_ReturnCorrectTotalPrice()
+    {
+        var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{Sku = "A", price = 50});
+        rules.AddRule(new PricingRule{Sku = "B", price = 30});
+        rules.AddRule(new PricingRule{Sku = "C", price = 20});
+        rules.AddRule(new PricingRule{Sku = "D", price = 15 });
+
+        ICheckout checkout = new Checkout(rules);
+
+        checkout.Scan("A");
+        checkout.Scan("B");
+        checkout.Scan("C");
+        checkout.Scan("D");
+        double total = checkout.GetTotalPrice();
+
+        Assert.Equal(115, total);
+    }
+
     [Theory]
     [InlineData("A", 50)]
     [InlineData("B", 30)]
