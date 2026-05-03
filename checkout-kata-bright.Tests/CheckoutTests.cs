@@ -18,7 +18,7 @@ public class CheckoutTests
     public void ScanItem_ReturnCorrectPrice(string SKU)
     {
         var rules = new PricingRulesRepo();
-        rules.AddRule(new PricingRule{Sku = "A"});
+        rules.AddRule(new PricingRule{Sku = "A", price = 50});
 
         ICheckout checkout = new Checkout(rules);
 

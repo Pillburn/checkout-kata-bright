@@ -10,16 +10,21 @@ public class Checkout: ICheckout
         _pricingRules = pricingRules;
     }
 
-    public void Scan(string itemID)
+    public void Scan(string item)
     {
-        _scannedItems.Add(itemID);
+        _scannedItems.Add(item);
     }
     public double GetTotalPrice()
     {
-        int basketTotal = 0;
+        double basketTotal = 0;
         foreach (var sku in _scannedItems)
         {
             var rule = _pricingRules.GetRule(sku);
+            if (rule != null)
+            {
+                basketTotal += rule.price;
+            }
+
         }
         return basketTotal;
     }
