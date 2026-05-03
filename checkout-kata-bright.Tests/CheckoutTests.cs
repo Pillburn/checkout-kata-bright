@@ -13,6 +13,7 @@ public class CheckoutTests
         //Assert Basket is 0
         Assert.Equal(0, checkout.GetTotalPrice());
     }
+
     [Fact]
     public static void ScanItem_ReturnCorrectPrice()
     {
@@ -25,6 +26,22 @@ public class CheckoutTests
         double total = checkout.GetTotalPrice();
 
         Assert.Equal(50, total);
+    }
+
+    [Theory]
+    [InlineData("A", 50)]
+    [InlineData("B", 30)]
+    [InlineData("C", 20)]
+    [InlineData("D", 15)]
+        public void ScanMultipleItems_ReturnCorrectPrice(string sku, double price)
+    {
+         var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{Sku = sku, price = price});
+        ICheckout checkout = new Checkout(rules);
+
+        checkout.Scan(sku);
+        double total = checkout.GetTotalPrice();
+        Assert.Equal(price,total);
     }
 
     [Fact]
@@ -46,20 +63,17 @@ public class CheckoutTests
 
         Assert.Equal(115, total);
     }
-
-    [Theory]
-    [InlineData("A", 50)]
-    [InlineData("B", 30)]
-    [InlineData("C", 20)]
-    [InlineData("D", 15)]
-        public void ScanMultipleItems_ReturnCorrectPrice(string sku, double price)
+    [Fact]
+    public void ThreeAs_CostCorrect_WithSpecialOffer()
     {
-         var rules = new PricingRulesRepo();
-        rules.AddRule(new PricingRule{Sku = sku, price = price});
-        ICheckout checkout = new Checkout(rules);
+        var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{Sku="A" ,price=50, SpecialAmount = 3, SpecialPrice = 130});
 
-        checkout.Scan(sku);
-        double total = checkout.GetTotalPrice();
-        Assert.Equal(price,total);
+        ICheckout checkout = new Checkout(rules);
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+
+        Assert.Equal(130, checkout.GetTotalPrice()); 
     }
 }

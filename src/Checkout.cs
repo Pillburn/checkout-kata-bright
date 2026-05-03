@@ -1,4 +1,5 @@
-﻿using PricingRules;
+﻿using System.Threading.Tasks.Dataflow;
+using PricingRules;
 namespace CheckoutKata;
 public class Checkout: ICheckout
 {
@@ -16,15 +17,28 @@ public class Checkout: ICheckout
     }
     public double GetTotalPrice()
     {
+        
         double basketTotal = 0;
-        foreach (var sku in _scannedItems)
-        {
-            var rule = _pricingRules.GetRule(sku);
-            if (rule != null)
-            {
-                basketTotal += rule.price;
-            }
 
+        var groups = _scannedItems.GroupBy(sku => sku);
+
+        foreach (var group in groups)
+        {
+            string sku = group.Key;
+            int count = group.Count();
+            var rule = _pricingRules.GetRule(sku);
+            if (rule.SpecialAmount != null && rule.SpecialPrice != null)
+            {
+                int batches = (int)(count / rule.SpecialAmount.Value);
+                int remainder = (int) (count % rule.SpecialAmount.Value);
+
+                basketTotal += (double)(batches * rule.SpecialPrice.Value); 
+                basketTotal += remainder * rule.price;
+            }
+            else
+            {
+                basketTotal += count * rule.price;
+            }
         }
         return basketTotal;
     }
