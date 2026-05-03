@@ -3,8 +3,10 @@
 public class PricingRule
 {
     public required string Sku { get ; set; }
+    public required double price { get ; set; }
+    public string? SpecialDealSku { get ; set; }
+    public double? SpecialPrice {get; set;} //both nullable as not every item has a Deal
 
-    public double price { get ; set; }
 }
 public class PricingRulesRepo
 {
