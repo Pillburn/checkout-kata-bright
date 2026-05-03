@@ -91,6 +91,26 @@ public class CheckoutTests
     }
 
     [Fact]
+    public void MultipleAs_CostCorrect_WithSpecialOffer()
+    {
+        var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{Sku="A" ,price=50, SpecialAmount = 3, SpecialPrice = 130});
+
+        ICheckout checkout = new Checkout(rules);
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+
+        Assert.Equal(390, checkout.GetTotalPrice()); 
+    }
+
+    [Fact]
 
     public void MixedDeal_CostCorrect_WithSpecialOffers()
     {
