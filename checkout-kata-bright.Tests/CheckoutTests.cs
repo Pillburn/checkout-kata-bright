@@ -1,4 +1,5 @@
-﻿using CheckoutKata;
+﻿using System.Reflection.Metadata;
+using CheckoutKata;
 using PricingRules;
 using Xunit;
 public class CheckoutTests
@@ -75,5 +76,34 @@ public class CheckoutTests
         checkout.Scan("A");
 
         Assert.Equal(130, checkout.GetTotalPrice()); 
+    }
+
+    [Fact]
+    public void TwoBs_CostCorrect_WithSpecialOffer()
+    {
+        var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{ Sku="B", price = 30, SpecialAmount = 2, SpecialPrice = 45 });
+        ICheckout checkout = new Checkout(rules);
+        checkout.Scan("B");
+        checkout.Scan("B");
+
+        Assert.Equal(45,checkout.GetTotalPrice());
+    }
+
+    [Fact]
+
+    public void MixedDeal_CostCorrect_WithSpecialOffers()
+    {
+        var rules = new PricingRulesRepo();
+        rules.AddRule(new PricingRule{Sku="A" ,price=50, SpecialAmount = 3, SpecialPrice = 130});
+        rules.AddRule(new PricingRule{ Sku="B", price = 30, SpecialAmount = 2, SpecialPrice = 45 });
+        ICheckout checkout = new Checkout(rules);
+        checkout.Scan("B");
+        checkout.Scan("B");
+        checkout.Scan("A");
+        checkout.Scan("A");
+        checkout.Scan("A");
+
+        Assert.Equal(175, checkout.GetTotalPrice());
     }
 }
