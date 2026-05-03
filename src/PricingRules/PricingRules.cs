@@ -8,7 +8,7 @@ public class PricingRule
     public double? SpecialPrice {get; set;} //both nullable as not every item has a Deal
 
 }
-public class PricingRulesRepo
+public class PricingRulesRepo: IPricingRulesRepo
 {
     private readonly List<PricingRule> _rules = new();
 

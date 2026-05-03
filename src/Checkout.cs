@@ -1,18 +1,26 @@
 ﻿using System.Threading.Tasks.Dataflow;
-using PricingRules;
 namespace CheckoutKata;
 public class Checkout: ICheckout
 {
-    private readonly PricingRulesRepo _pricingRules;
+    private readonly IPricingRulesRepo _pricingRules;
     private readonly List<string> _scannedItems = new();
 
-    public Checkout(PricingRulesRepo pricingRules)
+    public Checkout(IPricingRulesRepo pricingRules)
     {
         _pricingRules = pricingRules;
     }
 
     public void Scan(string item)
     {
+        if (item == null)
+        throw new ArgumentNullException(nameof(item));
+    
+        if (string.IsNullOrWhiteSpace(item))
+        throw new ArgumentException("Item cannot be empty or whitespace.", nameof(item));
+
+        if (_pricingRules.GetRule(item) == null)
+        throw new ArgumentException($"SKU '{item}' is not recognised.", nameof(item));
+
         _scannedItems.Add(item);
     }
     public double GetTotalPrice()

@@ -48,7 +48,8 @@ public class CheckoutTests
     [Fact]
      public static void ScanMultipleItems_ReturnCorrectTotalPrice()
     {
-        var rules = new PricingRulesRepo();
+
+        IPricingRulesRepo rules = new PricingRulesRepo(); 
         rules.AddRule(new PricingRule{Sku = "A", price = 50});
         rules.AddRule(new PricingRule{Sku = "B", price = 30});
         rules.AddRule(new PricingRule{Sku = "C", price = 20});
@@ -125,5 +126,25 @@ public class CheckoutTests
         checkout.Scan("A");
 
         Assert.Equal(175, checkout.GetTotalPrice());
+    }
+    [Fact]
+    public void Scan_NullItem_ThrowsArgumentNullException()
+    {
+        var checkout = new Checkout(new PricingRulesRepo());
+        Assert.Throws<ArgumentNullException>(() => checkout.Scan(null));
+    }
+
+    [Fact]
+    public void Scan_EmptyString_ThrowsArgumentException()
+    {
+        var checkout = new Checkout(new PricingRulesRepo());
+        Assert.Throws<ArgumentException>(() => checkout.Scan(""));
+    }
+
+    [Fact]
+    public static void ScanItem_UnknownID()
+    {
+        var checkout = new Checkout(new PricingRulesRepo());
+        Assert.Throws<ArgumentException>(() => checkout.Scan(""));
     }
 }
