@@ -3,9 +3,9 @@
 public class PricingRule
 {
     public required string Sku { get ; set; }
-    public required double price { get ; set; }
+    public required int price { get ; set; }
     public int? SpecialAmount { get ; set; }
-    public double? SpecialPrice {get; set;} //both nullable as not every item has a Deal
+    public int? SpecialPrice {get; set;} //both nullable as not every item has a Deal
 
 }
 public class PricingRulesRepo: IPricingRulesRepo

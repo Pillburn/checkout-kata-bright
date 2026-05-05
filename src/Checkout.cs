@@ -23,10 +23,10 @@ public class Checkout: ICheckout
 
         _scannedItems.Add(item);
     }
-    public double GetTotalPrice()
+    public int GetTotalPrice()
     {
         
-        double basketTotal = 0;
+        int basketTotal = 0;
 
         var groups = _scannedItems.GroupBy(sku => sku);
 
@@ -35,12 +35,16 @@ public class Checkout: ICheckout
             string sku = group.Key;
             int count = group.Count();
             var rule = _pricingRules.GetRule(sku);
+
+            if (rule == null)
+                continue;
+
             if (rule.SpecialAmount != null && rule.SpecialPrice != null)
             {
-                int batches = (int)(count / rule.SpecialAmount.Value);
-                int remainder = (int) (count % rule.SpecialAmount.Value);
+                int batches = count / rule.SpecialAmount.Value;
+                int remainder =  count % rule.SpecialAmount.Value;
 
-                basketTotal += (double)(batches * rule.SpecialPrice.Value); 
+                basketTotal += batches * rule.SpecialPrice.Value; 
                 basketTotal += remainder * rule.price;
             }
             else

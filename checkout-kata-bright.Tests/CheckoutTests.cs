@@ -24,7 +24,7 @@ public class CheckoutTests
         ICheckout checkout = new Checkout(rules);
 
         checkout.Scan("A");
-        double total = checkout.GetTotalPrice();
+        int total = checkout.GetTotalPrice();
 
         Assert.Equal(50, total);
     }
@@ -34,14 +34,14 @@ public class CheckoutTests
     [InlineData("B", 30)]
     [InlineData("C", 20)]
     [InlineData("D", 15)]
-        public void ScanMultipleItems_ReturnCorrectPrice(string sku, double price)
+        public void ScanMultipleItems_ReturnCorrectPrice(string sku, int price)
     {
          var rules = new PricingRulesRepo();
         rules.AddRule(new PricingRule{Sku = sku, price = price});
         ICheckout checkout = new Checkout(rules);
 
         checkout.Scan(sku);
-        double total = checkout.GetTotalPrice();
+        int total = checkout.GetTotalPrice();
         Assert.Equal(price,total);
     }
 
@@ -61,7 +61,7 @@ public class CheckoutTests
         checkout.Scan("B");
         checkout.Scan("C");
         checkout.Scan("D");
-        double total = checkout.GetTotalPrice();
+        int total = checkout.GetTotalPrice();
 
         Assert.Equal(115, total);
     }
@@ -131,7 +131,7 @@ public class CheckoutTests
     public void Scan_NullItem_ThrowsArgumentNullException()
     {
         var checkout = new Checkout(new PricingRulesRepo());
-        Assert.Throws<ArgumentNullException>(() => checkout.Scan(null));
+        Assert.Throws<ArgumentNullException>(() => checkout.Scan(null!));
     }
 
     [Fact]
@@ -146,5 +146,18 @@ public class CheckoutTests
     {
         var checkout = new Checkout(new PricingRulesRepo());
         Assert.Throws<ArgumentException>(() => checkout.Scan(""));
+    }
+
+    [Fact]
+    public void Checkout_WorksWithAltPricingRules()
+    {
+        var fake = new FakePricingRulesRepo();
+        fake.AddRule(new PricingRule { Sku = "B", price = 30, SpecialAmount = 2, SpecialPrice = 45 });
+
+        var checkout = new Checkout(fake);
+        checkout.Scan("B");
+        checkout.Scan("B");
+
+        Assert.Equal(45, checkout.GetTotalPrice());
     }
 }
